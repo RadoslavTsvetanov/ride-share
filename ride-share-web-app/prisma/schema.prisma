@@ -63,6 +63,7 @@ model RideRequest {
   startLng Float
   endLat   Float
   endLng   Float
+  arrivalTime String 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -72,6 +73,9 @@ model RideOpportunity {
   id       String   @id @default(cuid())
   driver   Driver   @relation(fields: [driverId], references: [id])
   driverId String
+  arrivalTime String 
+  
+
 
   startLat Float
   startLng Float

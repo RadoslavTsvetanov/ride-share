@@ -35,6 +35,8 @@ model Passenger {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Ride Ride[] @relation("RidePassengers")
 }
 
 model Driver {
@@ -102,6 +104,10 @@ model Ride {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Passenger Passenger[]
+
+  Driver Driver[]
 }
 
 model Review {

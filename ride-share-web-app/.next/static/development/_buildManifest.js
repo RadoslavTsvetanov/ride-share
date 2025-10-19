@@ -17,6 +17,7 @@ self.__BUILD_MANIFEST = {
     "/api/trpc/[trpc]",
     "/map/all",
     "/map/ride-opprotunities",
-    "/map/ride-requests"
+    "/map/ride-requests",
+    "/rides/[index]"
   ]
 };self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB()

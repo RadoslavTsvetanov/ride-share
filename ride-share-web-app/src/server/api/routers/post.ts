@@ -11,21 +11,18 @@ export const postRouter = createTRPCRouter({
       };
     }),
 
-  create: publicProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.post.create({
-        data: {
-          name: input.name,
-        },
+
+// make it so that in the future it accepts options for either end destinaton, start destination, both, or all in a certain radius
+
+  getRidesOpportunities: publicProcedure
+    .query(async ({ ctx }) => {
+      const rides = await ctx.db.rideOpportunity.findMany({
+        orderBy: { createdAt: "desc" },
+        include: {
+          driver: true,
+        }
       });
-    }),
 
-  getLatest: publicProcedure.query(async ({ ctx }) => {
-    const post = await ctx.db.post.findFirst({
-      orderBy: { createdAt: "desc" },
-    });
-
-    return post ?? null;
+      return rides;
   }),
 });

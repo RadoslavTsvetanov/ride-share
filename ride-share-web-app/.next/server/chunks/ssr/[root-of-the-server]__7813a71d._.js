@@ -52,7 +52,9 @@ __turbopack_context__.s([
     ()=>Home
 ]);
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react/jsx-dev-runtime [external] (react/jsx-dev-runtime, cjs)");
+var __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react [external] (react, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Map$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/Map.tsx [ssr] (ecmascript)");
+;
 ;
 ;
 const DEFAULT_CENTER = [
@@ -80,14 +82,37 @@ const ROUTE_COORDINATES = [
     [
         38.925,
         -77.050
-    ] // End point
+    ]
 ];
 function Home() {
+    const [userLocation, setUserLocation] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(DEFAULT_CENTER);
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
+        // Get user's location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position)=>{
+                const { latitude, longitude } = position.coords;
+                const location = [
+                    latitude,
+                    longitude
+                ];
+                setUserLocation(location);
+            }, (error)=>{
+                console.error('Error getting user location:', error);
+            // Fallback to default center if location access is denied
+            });
+        }
+        setInterval(()=>{
+            setUserLocation([
+                30.0000,
+                30.0000
+            ]);
+        }, 5000);
+    }, []);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Map$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
             width: "800",
             height: "400",
-            center: DEFAULT_CENTER,
+            center: userLocation,
             zoom: 12,
             children: ({ TileLayer, Marker, Popup, Polyline })=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
                     children: [
@@ -96,7 +121,7 @@ function Home() {
                             attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         }, void 0, false, {
                             fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                            lineNumber: 23,
+                            lineNumber: 50,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Marker, {
@@ -105,12 +130,12 @@ function Home() {
                                 children: "Start Point"
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                                lineNumber: 28,
+                                lineNumber: 55,
                                 columnNumber: 19
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                            lineNumber: 27,
+                            lineNumber: 54,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Marker, {
@@ -119,12 +144,12 @@ function Home() {
                                 children: "End Point"
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                                lineNumber: 33,
+                                lineNumber: 60,
                                 columnNumber: 19
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                            lineNumber: 32,
+                            lineNumber: 59,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Polyline, {
@@ -134,19 +159,19 @@ function Home() {
                             opacity: 0.7
                         }, void 0, false, {
                             fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                            lineNumber: 37,
+                            lineNumber: 64,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true)
         }, void 0, false, {
             fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-            lineNumber: 20,
+            lineNumber: 47,
             columnNumber: 11
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-        lineNumber: 19,
+        lineNumber: 46,
         columnNumber: 5
     }, this);
 }

@@ -47,6 +47,8 @@ const __TURBOPACK__default__export__ = Map;
 "[project]/src/pages/map/ride-opprotunities.tsx [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
+return __turbopack_context__.a(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
+
 __turbopack_context__.s([
     "default",
     ()=>Home
@@ -54,6 +56,11 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react/jsx-dev-runtime [external] (react/jsx-dev-runtime, cjs)");
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react [external] (react, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Map$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/Map.tsx [ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$api$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/utils/api.ts [ssr] (ecmascript)");
+var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
+    __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$api$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__
+]);
+[__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$api$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
 ;
 ;
 ;
@@ -61,6 +68,7 @@ const DEFAULT_CENTER = [
     38.907132,
     -77.036546
 ];
+;
 // Simulate a route with multiple waypoints
 const ROUTE_COORDINATES = [
     [
@@ -84,8 +92,78 @@ const ROUTE_COORDINATES = [
         -77.050
     ]
 ];
+const Route = (props)=>{
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(props.others.Popup, {
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("a", {
+                    href: "http://localhost:3000/companies/" + props.routeData.id
+                }, void 0, false, {
+                    fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
+                    lineNumber: 27,
+                    columnNumber: 9
+                }, ("TURBOPACK compile-time value", void 0))
+            }, void 0, false, {
+                fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
+                lineNumber: 26,
+                columnNumber: 7
+            }, ("TURBOPACK compile-time value", void 0)),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(props.others.Marker, {
+                position: [
+                    props.routeData.startLat,
+                    props.routeData.startLng
+                ],
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(props.others.Popup, {
+                    children: [
+                        "Start Point for Ride Opportunity ",
+                        props.routeData.id
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
+                    lineNumber: 30,
+                    columnNumber: 9
+                }, ("TURBOPACK compile-time value", void 0))
+            }, void 0, false, {
+                fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
+                lineNumber: 29,
+                columnNumber: 7
+            }, ("TURBOPACK compile-time value", void 0)),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(props.others.Marker, {
+                position: [
+                    props.routeData.endLat,
+                    props.routeData.endLng
+                ],
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(props.others.Popup, {
+                    children: [
+                        "End Point for Ride Opportunity ",
+                        props.routeData.id
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
+                    lineNumber: 35,
+                    columnNumber: 9
+                }, ("TURBOPACK compile-time value", void 0))
+            }, void 0, false, {
+                fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
+                lineNumber: 34,
+                columnNumber: 7
+            }, ("TURBOPACK compile-time value", void 0)),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(props.others.Polyline, {
+                positions: props.routeData.stops,
+                color: "blue",
+                weight: 4,
+                opacity: 0.7
+            }, void 0, false, {
+                fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
+                lineNumber: 39,
+                columnNumber: 7
+            }, ("TURBOPACK compile-time value", void 0))
+        ]
+    }, void 0, true);
+};
 function Home() {
     const [userLocation, setUserLocation] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(DEFAULT_CENTER);
+    const rides = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$utils$2f$api$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["api"].post.getRidesOpportunities.useQuery();
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
         // Get user's location
         if (navigator.geolocation) {
@@ -121,61 +199,37 @@ function Home() {
                             attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         }, void 0, false, {
                             fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                            lineNumber: 50,
+                            lineNumber: 80,
                             columnNumber: 17
                         }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Marker, {
-                            position: ROUTE_COORDINATES[0],
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Popup, {
-                                children: "Start Point"
+                        rides?.data?.map((ride)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Route, {
+                                routeData: ride,
+                                others: {
+                                    TileLayer,
+                                    Marker,
+                                    Popup,
+                                    Polyline
+                                }
                             }, void 0, false, {
                                 fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                                lineNumber: 55,
+                                lineNumber: 85,
                                 columnNumber: 19
-                            }, this)
-                        }, void 0, false, {
-                            fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                            lineNumber: 54,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Marker, {
-                            position: ROUTE_COORDINATES[ROUTE_COORDINATES.length - 1],
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Popup, {
-                                children: "End Point"
-                            }, void 0, false, {
-                                fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                                lineNumber: 60,
-                                columnNumber: 19
-                            }, this)
-                        }, void 0, false, {
-                            fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                            lineNumber: 59,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(Polyline, {
-                            positions: ROUTE_COORDINATES,
-                            color: "blue",
-                            weight: 4,
-                            opacity: 0.7
-                        }, void 0, false, {
-                            fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-                            lineNumber: 64,
-                            columnNumber: 17
-                        }, this)
+                            }, this))
                     ]
                 }, void 0, true)
         }, void 0, false, {
             fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-            lineNumber: 47,
+            lineNumber: 77,
             columnNumber: 11
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/pages/map/ride-opprotunities.tsx",
-        lineNumber: 46,
+        lineNumber: 76,
         columnNumber: 5
     }, this);
 }
-}),
+__turbopack_async_result__();
+} catch(e) { __turbopack_async_result__(e); } }, false);}),
 "[externals]/next/dist/shared/lib/no-fallback-error.external.js [external] (next/dist/shared/lib/no-fallback-error.external.js, cjs)", ((__turbopack_context__, module, exports) => {
 
 const mod = __turbopack_context__.x("next/dist/shared/lib/no-fallback-error.external.js", () => require("next/dist/shared/lib/no-fallback-error.external.js"));

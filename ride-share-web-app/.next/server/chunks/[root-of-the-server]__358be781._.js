@@ -264,6 +264,17 @@ var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
 [__TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$server$2f$api$2f$trpc$2e$ts__$5b$api$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
 ;
 ;
+function toISO8601(datetime) {
+    // If string is missing seconds, append ":00"
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(datetime)) {
+        datetime += ":00";
+    }
+    // Optional: force UTC with "Z" at the end
+    if (!datetime.endsWith("Z") && !/[+-]\d{2}:\d{2}$/.test(datetime)) {
+        datetime += "Z";
+    }
+    return datetime;
+}
 const postRouter = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$server$2f$api$2f$trpc$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["createTRPCRouter"])({
     hello: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$server$2f$api$2f$trpc$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["publicProcedure"].input(__TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].object({
         text: __TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].string()
@@ -272,22 +283,94 @@ const postRouter = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$se
             greeting: `Hello ${input.text}`
         };
     }),
-    create: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$server$2f$api$2f$trpc$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["publicProcedure"].input(__TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].object({
-        name: __TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].string().min(1)
-    })).mutation(async ({ ctx, input })=>{
-        return ctx.db.post.create({
-            data: {
-                name: input.name
+    // make it so that in the future it accepts options for either end destinaton, start destination, both, or all in a certain radius
+    getRidesOpportunities: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$server$2f$api$2f$trpc$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["publicProcedure"].query(async ({ ctx })=>{
+        // const rides = await ctx.db.rideOpportunity.findMany({
+        //   orderBy: { createdAt: "desc" },
+        //   include: {
+        //     driver: true,
+        //   }
+        // });
+        const rides = [
+            {
+                id: 1,
+                startLat: 38.907132,
+                startLng: -77.036546,
+                endLat: 38.911132,
+                endLng: -77.041546,
+                stops: [
+                    [
+                        38.907132,
+                        -77.036546
+                    ],
+                    [
+                        38.911132,
+                        -77.041546
+                    ]
+                ],
+                driver: {
+                    id: 1,
+                    name: 'John Doe',
+                    email: 'john@example.com',
+                    phoneNumber: '123-456-7890'
+                }
+            },
+            {
+                id: 2,
+                startLat: 38.909132,
+                startLng: -77.039546,
+                endLat: 38.912132,
+                endLng: -77.042546,
+                stops: [
+                    [
+                        38.909132,
+                        -77.039546
+                    ],
+                    [
+                        38.912132,
+                        -77.042546
+                    ]
+                ],
+                driver: {
+                    id: 2,
+                    name: 'Jane Smith',
+                    email: 'jane@example.com',
+                    phoneNumber: '098-765-4321'
+                }
             }
-        });
+        ];
+        return rides;
     }),
-    getLatest: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$server$2f$api$2f$trpc$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["publicProcedure"].query(async ({ ctx })=>{
-        const post = await ctx.db.post.findFirst({
+    getRideRequests: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$server$2f$api$2f$trpc$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["publicProcedure"].query(async ({ ctx })=>{
+        const rideRequests = await ctx.db.rideRequest.findMany({
             orderBy: {
                 createdAt: "desc"
+            },
+            include: {
+                passenger: true
             }
         });
-        return post ?? null;
+        return rideRequests;
+    }),
+    createRideRequest: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$server$2f$api$2f$trpc$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["publicProcedure"].input(__TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].object({
+        startLat: __TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].number(),
+        startLng: __TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].number(),
+        endLat: __TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].number(),
+        endLng: __TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].number(),
+        passengerId: __TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].string(),
+        arrivalTime: __TURBOPACK__imported__module__$5b$externals$5d2f$zod__$5b$external$5d$__$28$zod$2c$__esm_import$29$__["z"].string()
+    })).mutation(async ({ ctx, input })=>{
+        const rideRequest = await ctx.db.rideRequest.create({
+            data: {
+                startLat: input.startLat,
+                startLng: input.startLng,
+                endLat: input.endLat,
+                endLng: input.endLng,
+                passengerId: input.passengerId,
+                arrivalTime: toISO8601(input.arrivalTime)
+            }
+        });
+        return rideRequest;
     })
 });
 __turbopack_async_result__();

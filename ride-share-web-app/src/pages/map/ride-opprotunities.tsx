@@ -1,7 +1,9 @@
-import Head from 'next/head';
+import type { RideOpportunity } from '@prisma/client';
 import { useState, useEffect } from 'react';
 
 import Map from '~/components/Map';
+import { Route } from '~/components/Route';
+import type { Coordinate } from '~/types/main';
 
 const DEFAULT_CENTER: [number, number] = [38.907132, -77.036546]
 
@@ -15,9 +17,9 @@ const ROUTE_COORDINATES: [number, number][] = [
   [38.925, -77.050] 
 ]
 
-export type Coordinate = [number, number];
 
-export default function Home() {
+
+export default function RideOpportunities() {
   const [userLocation, setUserLocation] = useState<Coordinate>(DEFAULT_CENTER);
   const rides  = api.post.getRidesOpportunities.useQuery(); 
   useEffect(() => {
@@ -53,29 +55,10 @@ export default function Home() {
                   attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
                 />
                 {rides?.data?.map((ride) => (
-                  <Marker position={[ride.startLat, ride.startLng]}>
-                    <Popup>
-                      Start Point for Ride Opportunity {ride.id}
-                    </Popup>
-                  </Marker>
+                  <Route routeData={ride} others={{ TileLayer, Marker, Popup, Polyline }} />
                 ))}
-                <Marker position={ROUTE_COORDINATES[0]}>
-                  <Popup>
-                    Start Point
-                  </Popup>
-                </Marker>
-                <Marker position={ROUTE_COORDINATES[ROUTE_COORDINATES.length - 1]}>
-                  <Popup>
-                    End Point
-                  </Popup>
-                </Marker>
-                <Polyline 
-                  positions={ROUTE_COORDINATES} 
-                  color="blue" 
-                  weight={4}
-                  opacity={0.7}
-                />
-              </>
+
+              </> 
             )}
           </Map>
 

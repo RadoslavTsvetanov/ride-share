@@ -1,20 +1,103 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-    provider = "prisma-client-js"
-}
+// schema.prisma
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql" // or mysql/sqlite
+  url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+generator client {
+  provider = "prisma-client-js"
+}
 
-    @@index([name])
+model UserDetails {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String
+
+  // Relations
+  passenger Passenger?
+  driver    Driver?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Passenger {
+  id           String       @id @default(cuid())
+  userDetails  UserDetails  @relation(fields: [userDetailsId], references: [id])
+  userDetailsId String      @unique
+
+  rideRequests RideRequest[]
+
+  reviewsWritten  Review[] @relation("PassengerReviewsWritten")
+  reviewsReceived Review[] @relation("PassengerReviewsReceived")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Driver {
+  id           String       @id @default(cuid())
+  userDetails  UserDetails  @relation(fields: [userDetailsId], references: [id])
+  userDetailsId String      @unique
+
+  rideOpportunities RideOpportunity[]
+
+  reviewsWritten  Review[] @relation("DriverReviewsWritten")
+  reviewsReceived Review[] @relation("DriverReviewsReceived")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RideRequest {
+  id          String    @id @default(cuid())
+  passenger   Passenger @relation(fields: [passengerId], references: [id])
+  passengerId String
+
+  startLat Float
+  startLng Float
+  endLat   Float
+  endLng   Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RideOpportunity {
+  id       String   @id @default(cuid())
+  driver   Driver   @relation(fields: [driverId], references: [id])
+  driverId String
+
+  startLat Float
+  startLng Float
+  endLat   Float
+  endLng   Float
+
+  stops    Json // array of intermediary stops [{lat, lng}, ...]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String @id @default(cuid())
+  rating    Int
+  comment   String?
+
+  // Relations
+  passengerAuthor Passenger? @relation("PassengerReviewsWritten", fields: [passengerAuthorId], references: [id])
+  passengerAuthorId String?
+
+  passengerRecipient Passenger? @relation("PassengerReviewsReceived", fields: [passengerRecipientId], references: [id])
+  passengerRecipientId String?
+
+  driverAuthor Driver? @relation("DriverReviewsWritten", fields: [driverAuthorId], references: [id])
+  driverAuthorId String?
+
+  driverRecipient Driver? @relation("DriverReviewsReceived", fields: [driverRecipientId], references: [id])
+  driverRecipientId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

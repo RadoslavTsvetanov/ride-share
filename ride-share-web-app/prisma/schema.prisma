@@ -28,6 +28,7 @@ model Passenger {
   userDetailsId String      @unique
 
   rideRequests RideRequest[]
+  rides        Ride[] // rides passenger participates in
 
   reviewsWritten  Review[] @relation("PassengerReviewsWritten")
   reviewsReceived Review[] @relation("PassengerReviewsReceived")
@@ -42,6 +43,7 @@ model Driver {
   userDetailsId String      @unique
 
   rideOpportunities RideOpportunity[]
+  rides             Ride[] // rides created from their opportunities
 
   reviewsWritten  Review[] @relation("DriverReviewsWritten")
   reviewsReceived Review[] @relation("DriverReviewsReceived")
@@ -76,6 +78,28 @@ model RideOpportunity {
 
   stops    Json // array of intermediary stops [{lat, lng}, ...]
 
+  rides    Ride[] // rides booked based on this opportunity
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Ride {
+  id                  String           @id @default(cuid())
+  rideOpportunity     RideOpportunity  @relation(fields: [rideOpportunityId], references: [id])
+  rideOpportunityId   String
+
+  passengers          Passenger[]      @relation("RidePassengers") // multiple passengers can join
+
+  reviews             Review[]         @relation("RideReviews") // reviews for this ride
+
+  startLat Float
+  startLng Float
+  endLat   Float
+  endLng   Float
+
+  stops    Json // optional, can inherit from opportunity or override
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -85,7 +109,7 @@ model Review {
   rating    Int
   comment   String?
 
-  // Relations
+  // Relationships
   passengerAuthor Passenger? @relation("PassengerReviewsWritten", fields: [passengerAuthorId], references: [id])
   passengerAuthorId String?
 
@@ -97,6 +121,9 @@ model Review {
 
   driverRecipient Driver? @relation("DriverReviewsReceived", fields: [driverRecipientId], references: [id])
   driverRecipientId String?
+
+  ride          Ride? @relation("RideReviews", fields: [rideId], references: [id])
+  rideId        String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

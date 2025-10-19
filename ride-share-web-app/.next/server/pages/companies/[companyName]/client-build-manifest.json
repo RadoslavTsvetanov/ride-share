@@ -1,0 +1,5 @@
+{
+  "/companies/[companyName]": [
+    "./static/chunks/pages/companies/[companyName].js"
+  ]
+}

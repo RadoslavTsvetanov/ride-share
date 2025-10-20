@@ -221,29 +221,18 @@ endSearchPlace.setIsActive(false)
             </div>
             <button 
               onClick={handleCancel}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#f44336',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                marginRight: '10px'
-              }}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md cursor-pointer mr-2.5 border-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
             >
               Cancel
             </button>
             <button 
               onClick={handleCreateRequest}
               disabled={!startPosition || !endPosition}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: startPosition && endPosition ? '#4CAF50' : '#ccc',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: startPosition && endPosition ? 'pointer' : 'not-allowed'
-              }}
+              className={`px-4 py-2 rounded-md text-white border-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
+                !startPosition || !endPosition 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-green-500 hover:bg-green-600'
+              }`}
             >
               Create Request
             </button>
@@ -253,11 +242,11 @@ endSearchPlace.setIsActive(false)
           <Map  width="800" height="400" center={userLocation} zoom={12}>
             {({ TileLayer, Marker, Popup, Polyline }) => (
               <>
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                />
                 
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+            />
 
                 <MapClickHandler 
                   isSelecting={isSelectPopupOpen} 

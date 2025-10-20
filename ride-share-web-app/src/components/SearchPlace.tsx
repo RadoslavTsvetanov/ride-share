@@ -53,11 +53,21 @@ export const useSearchPlace = (
     }
   };
 
+  const [isShrank, setIsShrank] = useState(false);
+
   const SearchPlace: React.FC = () => {
     if (!isActive) return null;
+    if(isShrank) {
+      return <button onClick={() => setIsShrank(!isShrank)} className="fixed bottom-0 left-0 w-full max-w-md mx-auto p-4 border rounded-2xl shadow-sm bg-white" style={{"zIndex": 1000}}>Shrink</button>
+    }
     return (
-      <div className="max-w-md mx-auto p-4 border rounded-2xl shadow-sm bg-white">
+      <div
+        className="fixed bottom-0 left-0 w-full max-w-md mx-auto p-4 border rounded-2xl shadow-sm bg-white"
+        style={{ "--bs-gutter-x": "0", "--bs-gutter-y": "0", "zIndex": 1000 }}
+      >
         <div className="flex gap-2">
+
+        <button onClick={() => setIsShrank(!isShrank)} className="">{isShrank ? "Expand" : "Shrink"}</button>
           <input
             type="text"
             placeholder="Search for a place..."

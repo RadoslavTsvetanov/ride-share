@@ -4,6 +4,10 @@ import Link from 'next/link';
 import Map from '~/components/Map';
 import type { Coordinate } from '~/types/main';
 import { api } from "~/utils/api";
+import { useSearchPlace } from '~/components/SearchPlace';
+
+
+const isTheCompamyViewingIT = true
 
 export default function RideOpportunityDetail() {
   // stops are hardcoded for now 
@@ -11,25 +15,22 @@ export default function RideOpportunityDetail() {
   const { id } = router.query as { id?: string };
   const [hasVoted, setHasVoted] = useState(false);
   const [voteStatus, setVoteStatus] = useState<boolean | null>(null);
-
   const rideOpportunityData = api.post.getRideOpportunityData.useQuery(
     { rideOpportunityId: String(id) },
     { enabled: !!id }
   );
 
-  const voteMutation = api.post.voteForRideOpportunity.useMutation({
+  const voteMutation = api.post.addPassengerToRideOpportunity.useMutation({
     onSuccess: (data) => {
       setHasVoted(true);
-      setVoteStatus(data.interested);
     },
   });
 
-  const handleVote = (interested: boolean) => {
+  const handleVote = () => {
     if (!id) return;
     voteMutation.mutate({
       rideOpportunityId: String(id),
-      passengerId: "cmgy7g0f50000sbw1bcy6db25", // TODO: Replace with actual passenger ID
-      interested,
+      passengerId: "cmgy7g0f50000sbw1bcy6db25", 
     });
   };
 
@@ -115,6 +116,10 @@ export default function RideOpportunityDetail() {
             <span>{new Date(opportunity.arrivalTime).toLocaleString()}</span>
           </div>
 
+          <div>
+            Price: {opportunity.price}
+          </div>
+
           {/* Vote Buttons */}
           <div style={{ marginTop: '20px' }}>
             <h3 style={{ marginBottom: '12px', fontSize: '18px' }}>Are you interested?</h3>
@@ -135,24 +140,7 @@ export default function RideOpportunityDetail() {
                     boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
                   }}
                 >
-                  ✓ I'm In!
-                </button>
-                <button
-                  onClick={() => handleVote(false)}
-                  disabled={voteMutation.isPending}
-                  style={{
-                    padding: '12px 24px',
-                    backgroundColor: '#f44336',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: voteMutation.isPending ? 'not-allowed' : 'pointer',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                  }}
-                >
-                  ✗ Not Interested
+                  Join
                 </button>
               </div>
             ) : (
@@ -163,7 +151,6 @@ export default function RideOpportunityDetail() {
                 borderRadius: '8px',
                 fontWeight: 'bold',
               }}>
-                {voteStatus ? '✓ You voted: I\'m In!' : '✗ You voted: Not Interested'}
               </div>
             )}
           </div>
@@ -277,6 +264,52 @@ export default function RideOpportunityDetail() {
             </Map>
           </div>
         </div>
+
+        {/* Participants Section */}
+        {isTheCompamyViewingIT && opportunity.participants && opportunity.participants.length > 0 && (
+          <div style={cardStyle}>
+            <h2 style={sectionTitleStyle}>Participants ({opportunity.participants.length})</h2>
+            <div style={{ display: 'grid', gap: '12px' }}>
+              {opportunity.participants.map((participant) => (
+                <div 
+                  key={participant.id}
+                  style={{
+                    padding: '12px',
+                    backgroundColor: '#f5f5f5',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                  }}
+                >
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    backgroundColor: '#2196F3',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '18px',
+                  }}>
+                    {participant.userDetails?.name?.[0]?.toUpperCase() || '?'}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 'bold', fontSize: '16px' }}>
+                    <a href={`/users/${participant.id}`}>{participant.userDetails?.name || 'Unknown'}</a>
+                    </div>
+                    
+                    <div style={{ fontSize: '14px', color: '#666' }}>
+                      {participant.userDetails?.email || ''}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Back Button */}
         <button

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 import Map from '~/components/Map';
 import { Route } from '~/components/Route';
+import { useSearchPlace } from '~/components/SearchPlace';
 import type { Coordinate } from '~/types/main';
 
 const DEFAULT_CENTER: [number, number] = [38.907132, -77.036546]
@@ -57,7 +58,6 @@ export const ExistingRideRequests: React.FC<{comps: {
 
   const rideRequests = api.post.getRideRequests.useQuery();
 
-
   return (
     <>
                 {rideRequests.data && rideRequests.data.length > 0 && rideRequests?.data?.map((rideRequest) => (
@@ -66,7 +66,7 @@ export const ExistingRideRequests: React.FC<{comps: {
                       <comps.Popup>
                         <strong>Ride Request Start</strong><br />
                         ID: {rideRequest.id}<br />
-                        Arrival Time: {rideRequest.arrivalTime}
+                        Arrival Time: {new Date(rideRequest.arrivalTime).toLocaleString()}
                       </comps.Popup>
                     </comps.Marker>
                     <comps.Marker position={[rideRequest.endLat, rideRequest.endLng]}>
@@ -94,6 +94,14 @@ export default function RideRequests() {
   const [endPosition, setEndPosition] = useState<Coordinate | null>(null);
   const [arrivalTime, setArrivalTime] = useState<string>("");
 
+  const startSearchPlace = useSearchPlace((data) => {
+    setStartPosition([Number(data.lat), Number(data.lon)])
+startSearchPlace.setIsActive(false)
+  })
+  const endSearchPlace = useSearchPlace((data) => {
+    setEndPosition([Number(data.lat), Number(data.lon)])
+endSearchPlace.setIsActive(false)
+  })
 
   const createRideRequestMutation = api.post.createRideRequest.useMutation();
   
@@ -148,6 +156,15 @@ export default function RideRequests() {
     setEndPosition(null);
   };
 
+  useEffect(() => {
+    if(isSelectPopupOpen){
+      startSearchPlace.setIsActive(true);
+      endSearchPlace.setIsActive(true);
+    }
+  }, [
+    isSelectPopupOpen
+  ])
+
   return (
     <div>
         {isSelectPopupOpen && (
@@ -168,7 +185,8 @@ export default function RideRequests() {
               : "✅ Both positions selected! Click 'Create Request' to continue"}
           </div>
         )}
-        
+        <startSearchPlace.SearchPlace/>
+        <endSearchPlace.SearchPlace/>
         <button 
           onClick={() => setIsSelectPopupOpen(true)}
           style={{

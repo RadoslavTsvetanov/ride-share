@@ -47,7 +47,11 @@ export const postRouter = createTRPCRouter({
     const rideRequests = await ctx.db.rideRequest.findMany({
       orderBy: { createdAt: "desc" },
       include: {
-        passenger: true,
+        passenger: {
+          include: {
+            userDetails: true,
+          }
+        },
       }
     });
     return rideRequests;
@@ -141,21 +145,14 @@ export const postRouter = createTRPCRouter({
           }
         },
         rides: true,
+        participants: {
+          include: {
+            userDetails: true,
+          }
+        },
       }
     });
     return rideOpportunity;
-  }),
-
-  voteForRideOpportunity: publicProcedure
-  .input(z.object({
-    rideOpportunityId: z.string(),
-    passengerId: z.string(),
-    interested: z.boolean(),
-  }))
-  .mutation(async ({ ctx, input }) => {
-    // For now, we'll just return success
-    // In a real app, you'd store this vote in a database table
-    return { success: true, interested: input.interested };
   }),
 
   createRideOpportunity: publicProcedure
@@ -163,6 +160,7 @@ export const postRouter = createTRPCRouter({
     driverId: z.string(),
     stops: z.array(z.tuple([z.number(), z.number()])),
     arrivalTime: z.string(),
+    price: z.number().optional(),
   }))
   .mutation(async ({ ctx, input }) => {
     if (input.stops.length < 2) {
@@ -181,9 +179,99 @@ export const postRouter = createTRPCRouter({
         endLng: endStop![1],
         stops: input.stops,
         arrivalTime: toISO8601(input.arrivalTime),
+        price: input.price ?? 1.6,
       },
     });
     return rideOpportunity;
-  })
+  }),
 
+  getPassengerData: publicProcedure
+  .input(z.object({
+    passengerId: z.string(),
+  }))
+  .query(async ({ ctx, input }) => {
+    const passenger = await ctx.db.passenger.findUnique({
+      where: {
+        id: input.passengerId,
+      },
+      include: {
+        userDetails: true,
+        reviewsReceived: {
+          include: {
+            passengerAuthor: {
+              include: {
+                userDetails: true
+              }
+            },
+            driverAuthor: {
+              include: {
+                userDetails: true
+              }
+            },
+            ride: true,
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        },
+        rides: {
+          include: {
+            rideOpportunity: {
+              include: {
+                driver: {
+                  include: {
+                    userDetails: true
+                  }
+                }
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        },
+        rideRequests: {
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      },
+    });
+    return passenger;
+  }),
+
+  getAllPassengers: publicProcedure
+  .query(async ({ ctx }) => {
+    const passengers = await ctx.db.passenger.findMany({
+      include: {
+        userDetails: true,
+        reviewsReceived: true,
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+    return passengers;
+  }),
+
+  addPassengerToRideOpportunity: publicProcedure
+  .input(z.object({
+    rideOpportunityId: z.string(),
+    passengerId: z.string(),
+  }))
+  .mutation(async ({ ctx, input }) => {
+    const rideOpportunity = await ctx.db.rideOpportunity.update({
+      where: {
+        id: input.rideOpportunityId,
+      },
+      data: {
+        participants: {
+          connect: {
+            id: input.passengerId,
+          },
+        },
+      },
+    });
+    return rideOpportunity;
+  }),
 });

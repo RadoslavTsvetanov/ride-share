@@ -23,6 +23,7 @@ export const Route: React.FC<{routeData: any, others: {Popup: any, Polyline: any
         <others.Popup>
           <strong>End Point</strong><br />
           Ride Opportunity ID: {routeData.id}
+          <a href={`/map/ride-opportunities/${routeData.id}`}>View Route</a>
         </others.Popup>
       </others.Marker>
       {stops && Array.isArray(stops) && stops.length > 0 && (

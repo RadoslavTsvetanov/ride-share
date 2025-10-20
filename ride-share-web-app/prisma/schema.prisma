@@ -37,6 +37,8 @@ model Passenger {
   updatedAt DateTime @updatedAt
 
   Ride Ride[] @relation("RidePassengers")
+
+  RideOpportunity RideOpportunity[]
 }
 
 model Driver {
@@ -76,8 +78,9 @@ model RideOpportunity {
   driver   Driver   @relation(fields: [driverId], references: [id])
   driverId String
   arrivalTime String 
-  
+  price Float @default(1.6)
 
+  participants Passenger[]
 
   startLat Float
   startLng Float

@@ -1,25 +1,12 @@
+"use client"
 import * as React from "react";
 import { useRouter } from "next/router";
-
-type Review = {
-  id: string;
-  author: string;
-  rating: number;
-  comment: string;
-  date: string;
-};
-
-type Ride = {
-  id: string;
-  origin: string;
-  destination: string;
-  date: string;
-  reviews: Review[];
-};
+import { api } from "~/utils/api";
 
 export default function CompanyPage() {
   const router = useRouter();
   const { companyName } = router.query as { companyName?: string };
+  const companyPageData = api.post.getCompanyPageData.useQuery({ companyName: String(companyName) });
 
   const displayName = React.useMemo(() => {
     if (!companyName) return "Company";
@@ -33,48 +20,9 @@ export default function CompanyPage() {
     }
   }, [companyName]);
 
-  const [description, setDescription] = React.useState("");
-
-  React.useEffect(() => {
-    if (!companyName) return;
-    const key = String(companyName).toLowerCase();
-    const map: Record<string, string> = {
-      "acme-corp": "Acme Corp provides fast, affordable rides across the city with a focus on reliability and safety.",
-      "ride-share-pro": "Ride Share Pro connects drivers and passengers with premium, on-time service and transparent pricing.",
-      "city-cabs": "City Cabs offers 24/7 urban transportation with vetted drivers and clean vehicles.",
-    };
-    const fallback = `${displayName} offers reliable rides and deliveries.`;
-    const value = map[key] ?? fallback;
-    const t = setTimeout(() => setDescription(value), 200);
-    return () => clearTimeout(t);
-  }, [companyName, displayName]);
-
-  const [recentRides] = React.useState<Ride[]>([
-    {
-      id: "r1",
-      origin: "Downtown",
-      destination: "Airport",
-      date: new Date().toISOString(),
-      reviews: [
-        { id: "rv1", author: "Alex", rating: 5, comment: "Smooth ride and friendly driver.", date: new Date().toISOString() },
-        { id: "rv2", author: "Sam", rating: 4, comment: "On time, clean car.", date: new Date().toISOString() },
-      ],
-    },
-    {
-      id: "r2",
-      origin: "Central Station",
-      destination: "Tech Park",
-      date: new Date().toISOString(),
-      reviews: [
-        { id: "rv3", author: "Mia", rating: 3, comment: "Traffic was heavy, but okay overall.", date: new Date().toISOString() },
-      ],
-    },
-  ]);
-
-  const [companyReviews] = React.useState<Review[]>([
-    { id: "cr1", author: "Jordan", rating: 5, comment: "Excellent service across the board.", date: new Date().toISOString() },
-    { id: "cr2", author: "Taylor", rating: 4, comment: "Reliable and affordable.", date: new Date().toISOString() },
-  ]);
+  const recentRides = companyPageData.data?.rides ?? [];
+  const companyReviews = companyPageData.data?.reviewsReceived ?? [];
+  const description = companyPageData.data?.description ?? "";
 
   const completedTrips = React.useMemo(() => recentRides.length, [recentRides]);
   const overallScore = React.useMemo(() => {
@@ -136,7 +84,7 @@ export default function CompanyPage() {
                 whiteSpace: "pre-wrap",
               }}
             >
-              {description || "Loading description..."}
+              {description}
             </div>
           </div>
         </div>
@@ -144,46 +92,52 @@ export default function CompanyPage() {
         <div style={cardStyle}>
           <h2 style={sectionTitleStyle}>Recent rides</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {recentRides.map((ride) => (
-              <div key={ride.id} style={{ border: "1px solid #e5e7eb", borderRadius: 10, padding: 16 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <div>
-                    <div style={{ fontWeight: 600 }}>{ride.origin} → {ride.destination}</div>
-                    <div style={{ color: "#6b7280", fontSize: 12 }}>{new Date(ride.date).toLocaleString()}</div>
-                  </div>
-                  <span style={badgeStyle(
-                    ride.reviews.length
-                      ? Math.round(
-                          (ride.reviews.reduce((a, r) => a + r.rating, 0) / ride.reviews.length) * 10
-                        ) / 10
-                      : 0
-                  )}>
-                    {ride.reviews.length
-                      ? `${(
-                          ride.reviews.reduce((a, r) => a + r.rating, 0) / ride.reviews.length
-                        ).toFixed(1)}★`
-                      : "No reviews"}
-                  </span>
-                </div>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {ride.reviews.length ? (
-                    ride.reviews.map((rev) => (
-                      <div key={rev.id} style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 8, padding: 12 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                          <strong>{rev.author}</strong>
-                          <span style={{ color: "#111827" }}>{rev.rating}★</span>
+            {recentRides.length > 0 ? (
+              recentRides.map((ride) => {
+                const rideReviews = ride.reviews ?? [];
+                const avgRating = rideReviews.length
+                  ? rideReviews.reduce((a, r) => a + r.rating, 0) / rideReviews.length
+                  : 0;
+                
+                return (
+                  <div key={ride.id} style={{ border: "1px solid #e5e7eb", borderRadius: 10, padding: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                      <div>
+                        <div style={{ fontWeight: 600 }}>
+                          ({ride.startLat.toFixed(4)}, {ride.startLng.toFixed(4)}) → ({ride.endLat.toFixed(4)}, {ride.endLng.toFixed(4)})
                         </div>
-                        <div style={{ color: "#374151" }}>{rev.comment}</div>
-                        <div style={{ color: "#6b7280", fontSize: 12, marginTop: 4 }}>{new Date(rev.date).toLocaleString()}</div>
+                        <div style={{ color: "#6b7280", fontSize: 12 }}>{new Date(ride.createdAt).toLocaleString()}</div>
                       </div>
-                    ))
-                  ) : (
-                    <div style={{ color: "#6b7280", fontStyle: "italic" }}>No reviews for this ride yet.</div>
-                  )}
-                </div>
-              </div>
-            ))}
+                      <span style={badgeStyle(Math.round(avgRating * 10) / 10)}>
+                        {rideReviews.length ? `${avgRating.toFixed(1)}★` : "No reviews"}
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      {rideReviews.length ? (
+                        rideReviews.map((rev) => {
+                          const authorName = rev.passengerAuthor?.userDetails?.name || rev.driverAuthor?.userDetails?.name || "Anonymous";
+                          return (
+                            <div key={rev.id} style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 8, padding: 12 }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                                <strong>{authorName}</strong>
+                                <span style={{ color: "#111827" }}>{rev.rating}★</span>
+                              </div>
+                              <div style={{ color: "#374151" }}>{rev.comment ?? "No comment"}</div>
+                              <div style={{ color: "#6b7280", fontSize: 12, marginTop: 4 }}>{new Date(rev.createdAt).toLocaleString()}</div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div style={{ color: "#6b7280", fontStyle: "italic" }}>No reviews for this ride yet.</div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div style={{ color: "#6b7280", fontStyle: "italic" }}>No rides yet.</div>
+            )}
           </div>
         </div>
 
@@ -198,24 +152,20 @@ export default function CompanyPage() {
                   ) / 10
                 : 0
             )}>
-              {companyReviews.length
-                ? `${(
-                    companyReviews.reduce((a, r) => a + r.rating, 0) / companyReviews.length
-                  ).toFixed(1)}★`
-                : "No reviews"}
+              {overallScore !== null ? `${overallScore}★` : "No reviews"}
             </span>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {companyReviews.length ? (
               companyReviews.map((rev) => (
                 <div key={rev.id} style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 8, padding: 12 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <strong>{rev.author}</strong>
+                    <strong>{rev.passengerAuthor?.userDetails.name}</strong>
                     <span style={{ color: "#111827" }}>{rev.rating}★</span>
                   </div>
                   <div style={{ color: "#374151" }}>{rev.comment}</div>
-                  <div style={{ color: "#6b7280", fontSize: 12, marginTop: 4 }}>{new Date(rev.date).toLocaleString()}</div>
+                  <div style={{ color: "#6b7280", fontSize: 12, marginTop: 4 }}>{new Date(rev.createdAt).toLocaleString()}</div>
                 </div>
               ))
             ) : (

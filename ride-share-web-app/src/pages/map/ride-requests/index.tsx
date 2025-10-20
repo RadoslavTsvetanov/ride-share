@@ -150,7 +150,6 @@ export default function RideRequests() {
 
   return (
     <div>
-
         {isSelectPopupOpen && (
           <div 
           style={{

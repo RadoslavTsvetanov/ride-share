@@ -29,50 +29,14 @@ export const postRouter = createTRPCRouter({
 
   getRidesOpportunities: publicProcedure
     .query(async ({ ctx }) => {
-      // const rides = await ctx.db.rideOpportunity.findMany({
-      //   orderBy: { createdAt: "desc" },
-      //   include: {
-      //     driver: true,
-      //   }
-      // });
+      const rides = await ctx.db.rideOpportunity.findMany({
+        orderBy: { createdAt: "desc" },
+        include: {
+          driver: true,
+        }
+      });
 
 
-      const rides = [
-        {
-          id: 1,
-          startLat: 38.907132,
-          startLng: -77.036546,
-          endLat: 38.911132,
-          endLng: -77.041546,
-          stops: [
-            [38.907132, -77.036546],
-            [38.911132, -77.041546],
-          ],
-          driver: {
-            id: 1,
-            name: 'John Doe',
-            email: 'john@example.com',
-            phoneNumber: '123-456-7890',
-          },
-        },
-        {
-          id: 2,
-          startLat: 38.909132,
-          startLng: -77.039546,
-          endLat: 38.912132,
-          endLng: -77.042546,
-          stops: [
-            [38.909132, -77.039546],
-            [38.912132, -77.042546],
-          ],
-          driver: {
-            id: 2,
-            name: 'Jane Smith',
-            email: 'jane@example.com',
-            phoneNumber: '098-765-4321',
-          },
-        },
-      ];
 
       return rides;
   }),
@@ -110,5 +74,116 @@ export const postRouter = createTRPCRouter({
       },
     });
     return rideRequest;
+  }),
+
+  getCompanyPageData: publicProcedure
+  .input(z.object({
+    companyName: z.string(),
+  }))
+  .query(async ({ ctx, input }) => {
+    const company = await ctx.db.driver.findFirst({
+      where: {
+        userDetails: {
+          name: input.companyName,
+        },
+      },
+      include: {
+        reviewsReceived: {
+          include: {
+            passengerAuthor: {
+              include: {
+                userDetails: true
+              }
+            },
+            driverAuthor: {
+              include: {
+                userDetails: true
+              }
+            }
+          }
+        },
+        rides: {
+          include: {
+            reviews: {
+              include: {
+                passengerAuthor: {
+                  include: {
+                    userDetails: true
+                  }
+                },
+                driverAuthor: {
+                  include: {
+                    userDetails: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+    });
+    return company;
+  }),
+
+  getRideOpportunityData: publicProcedure
+  .input(z.object({
+    rideOpportunityId: z.string(),
+  }))
+  .query(async ({ ctx, input }) => {
+    const rideOpportunity = await ctx.db.rideOpportunity.findUnique({
+      where: {
+        id: input.rideOpportunityId,
+      },
+      include: {
+        driver: {
+          include: {
+            userDetails: true,
+          }
+        },
+        rides: true,
+      }
+    });
+    return rideOpportunity;
+  }),
+
+  voteForRideOpportunity: publicProcedure
+  .input(z.object({
+    rideOpportunityId: z.string(),
+    passengerId: z.string(),
+    interested: z.boolean(),
+  }))
+  .mutation(async ({ ctx, input }) => {
+    // For now, we'll just return success
+    // In a real app, you'd store this vote in a database table
+    return { success: true, interested: input.interested };
+  }),
+
+  createRideOpportunity: publicProcedure
+  .input(z.object({
+    driverId: z.string(),
+    stops: z.array(z.tuple([z.number(), z.number()])),
+    arrivalTime: z.string(),
+  }))
+  .mutation(async ({ ctx, input }) => {
+    if (input.stops.length < 2) {
+      throw new Error("At least 2 stops (start and end) are required");
+    }
+
+    const startStop = input.stops[0];
+    const endStop = input.stops[input.stops.length - 1];
+
+    const rideOpportunity = await ctx.db.rideOpportunity.create({
+      data: {
+        driverId: input.driverId,
+        startLat: startStop![0],
+        startLng: startStop![1],
+        endLat: endStop![0],
+        endLng: endStop![1],
+        stops: input.stops,
+        arrivalTime: toISO8601(input.arrivalTime),
+      },
+    });
+    return rideOpportunity;
   })
+
 });

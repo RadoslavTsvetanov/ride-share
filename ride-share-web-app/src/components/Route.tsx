@@ -1,30 +1,38 @@
-import type { RideOpportunity } from "@prisma/client"
-
-export const Route: React.FC<{routeData: RideOpportunity, others: {Popup: any, Polyline: any, Marker: any}}> = (props) => {
+export const Route: React.FC<{routeData: any, others: {Popup: any, Polyline: any, Marker: any}}> = (props) => {
+  const { routeData, others } = props;
+  
+  // Safely parse stops if it's a JSON value
+  let stops = routeData.stops;
+  if (typeof stops === 'string') {
+    try {
+      stops = JSON.parse(stops);
+    } catch (e) {
+      stops = null;
+    }
+  }
   
   return (
     <>
-      <props.others.Popup>
-        <a href={"http://localhost:3000/companies/" + props.routeData.id} />
-      </props.others.Popup>
-      <props.others.Marker position={[props.routeData.startLat, props.routeData.startLng]}>
-        <props.others.Popup>
-          Start Point for Ride Opportunity {props.routeData.id}
-        </props.others.Popup>
-      </props.others.Marker>
-      <props.others.Marker position={[props.routeData.endLat, props.routeData.endLng]}>
-        <props.others.Popup>
-          End Point for Ride Opportunity {props.routeData.id}
-        </props.others.Popup>
-      </props.others.Marker>
-                {props.routeData.stops && Array.isArray(props.routeData.stops) && props.routeData.stops.length > 0 && (
-                  <props.others.Polyline 
-                    positions={props.routeData.stops} 
-                    color="blue" 
-                    weight={4}
-                    opacity={0.7}
-                  />
-                )}
+      <others.Marker position={[routeData.startLat, routeData.startLng]}>
+        <others.Popup>
+          <strong>Start Point</strong><br />
+          Ride Opportunity ID: {routeData.id}
+        </others.Popup>
+      </others.Marker>
+      <others.Marker position={[routeData.endLat, routeData.endLng]}>
+        <others.Popup>
+          <strong>End Point</strong><br />
+          Ride Opportunity ID: {routeData.id}
+        </others.Popup>
+      </others.Marker>
+      {stops && Array.isArray(stops) && stops.length > 0 && (
+        <others.Polyline 
+          positions={stops} 
+          color="blue" 
+          weight={4}
+          opacity={0.7}
+        />
+      )}
     </>
   )
 }

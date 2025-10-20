@@ -12,8 +12,8 @@ generator client {
 model UserDetails {
   id       String @id @default(cuid())
   email    String @unique
-  password String
-
+  password String 
+  name String? @default("")
   // Relations
   passenger Passenger?
   driver    Driver?
@@ -43,6 +43,8 @@ model Driver {
   id           String       @id @default(cuid())
   userDetails  UserDetails  @relation(fields: [userDetailsId], references: [id])
   userDetailsId String      @unique
+
+  description String @default("")
 
   rideOpportunities RideOpportunity[]
   rides             Ride[] // rides created from their opportunities

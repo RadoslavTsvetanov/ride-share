@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Map from '~/components/Map';
@@ -20,6 +20,52 @@ export default function RideOpportunityDetail() {
     { enabled: !!id }
   );
 
+
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      const stops = rideOpportunityData?.data?.stops || [];
+      for (const [index, stop] of stops.entries()) {
+        try {
+          // Add delay between requests (1000ms = 1 second)
+          await new Promise(resolve => setTimeout(resolve, 1000 * index));
+          
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${stop[0]}&lon=${stop[1]}`,
+            {
+              headers: {
+                'User-Agent': 'RideShareApp/1.0 (your-email@example.com)',
+                'Accept-Language': 'en'
+              }
+            }
+          );
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          console.log(`Stop ${index + 1} location:`, data.display_name);
+          
+          // Update the locationsOfStops state with the new location data
+          setLocationsOfStops((prev: string[]) => {
+            const newLocations = [...prev];
+            newLocations[index] = data.display_name;
+            return newLocations;
+          });
+          
+        } catch (error) {
+          console.error(`Error fetching location for stop ${index + 1}:`, error);
+        }
+      }
+    };
+
+    if (rideOpportunityData?.data?.stops) {
+      void fetchLocations();
+    }
+  }, [rideOpportunityData]);
+
+  const [locationsOfStops, setLocationsOfStops] = useState<string[]>([])
   const voteMutation = api.post.addPassengerToRideOpportunity.useMutation({
     onSuccess: (data) => {
       setHasVoted(true);
@@ -208,10 +254,11 @@ export default function RideOpportunityDetail() {
                       fontSize: '14px',
                     }}
                   >
+                    <h1>{locationsOfStops[index]} Loading ....</h1>
                     <strong>
                       {index === 0 ? '🟢 Start' : index === stops.length - 1 ? '🔴 End' : `⚪ Stop ${index}`}:
                     </strong>{' '}
-                    ({stop[0].toFixed(6)}, {stop[1].toFixed(6)})
+                    (({stop[0].toFixed(6)}, {stop[1].toFixed(6)}))
                     <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
                       Estimated arrival: {new Date(opportunity.arrivalTime).toLocaleString()}
                     </div>

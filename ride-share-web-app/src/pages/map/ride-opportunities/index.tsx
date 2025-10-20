@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { Coordinate } from '~/types/main';
 import { api } from "~/utils/api";
 import Map from '~/components/Map';
@@ -180,9 +180,11 @@ export default function RideOpportunities() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<AIMatch[]>([]);
 
-  const searchPlaceStart = useSearchPlace(d => {});
-  const searchPlaceEnd = useSearchPlace(d => {});
+  
+  
   const rides = api.post.getRidesOpportunities.useQuery();
+
+  const searchPlaceStart = useSearchPlace(d => {setStops(v => [...v, [Number(d.lat), Number(d.lon)]])})
   const rideRequests = api.post.getRideRequests.useQuery();
   const createRideOpportunityMutation = api.post.createRideOpportunity.useMutation({
     onSuccess: () => {
@@ -286,7 +288,7 @@ export default function RideOpportunities() {
     <div style={{ padding: '16px' }}>
       <div style={{ marginBottom: '16px', display: 'flex', gap: '12px' }}>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {setIsModalOpen(true); searchPlaceStart.setIsActive(true)}}
           style={{
             ...styles.button,
             backgroundColor: '#4CAF50',
@@ -295,7 +297,6 @@ export default function RideOpportunities() {
           + Create New Ride Opportunity
         </button>
         <searchPlaceStart.SearchPlace/>
-        <searchPlaceEnd.SearchPlace/>
         <button
           onClick={handleGetAISuggestions}
           disabled={aiLoading}
@@ -513,7 +514,6 @@ export default function RideOpportunities() {
         </div>
       )}
 
-      {/* AI Suggestions */}
       {showAISuggestions && (
         <div style={{
           backgroundColor: 'white',

@@ -222,49 +222,6 @@ export default function RideOpportunityDetail() {
           )}
         </div>
 
-        <div style={cardStyle}>
-          <h2 style={sectionTitleStyle}>Route Map</h2>
-          <div style={{ height: '500px', width: '100%' }}>
-            <Map 
-              width={600} 
-              height={500} 
-              center={stops.length > 0 ? stops[0] : [opportunity.startLat, opportunity.startLng]} 
-              zoom={10}
-            >
-              {({ TileLayer, Marker, Popup, Polyline }) => (
-                <>
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                  />
-
-                  {stops.map((stop, index) => (
-                    <Marker key={index} position={stop}>
-                      <Popup>
-                        <strong>
-                          {index === 0 ? 'Start Point' : index === stops.length - 1 ? 'End Point' : `Stop ${index}`}
-                        </strong><br />
-                        Lat: {stop[0].toFixed(6)}<br />
-                        Lng: {stop[1].toFixed(6)}<br />
-                        Arrival: {new Date(opportunity.arrivalTime).toLocaleString()}
-                      </Popup>
-                    </Marker>
-                  ))}
-
-                  {stops.length > 1 && (
-                    <Polyline 
-                      positions={stops} 
-                      color="#2196F3" 
-                      weight={4}
-                      opacity={0.7}
-                    />
-                  )}
-                </>
-              )}
-            </Map>
-          </div>
-        </div>
-
         {/* Participants Section */}
         {isTheCompamyViewingIT && opportunity.participants && opportunity.participants.length > 0 && (
           <div style={cardStyle}>
@@ -324,10 +281,57 @@ export default function RideOpportunityDetail() {
             fontSize: '16px',
             fontWeight: 'bold',
             boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            zIndex: 1000
           }}
         >
           ← Back to All Opportunities
         </button>
+        <div style={cardStyle}>
+          <h2 style={sectionTitleStyle}>Route Map</h2>
+          <div style={{ height: '500px', width: '100%' }}>
+            <Map 
+              width={600} 
+              height={500} 
+              center={stops.length > 0 ? stops[0] : [opportunity.startLat, opportunity.startLng]} 
+              zoom={10}
+            >
+              {({ TileLayer, Marker, Popup, Polyline }) => (
+                <>
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+                  />
+
+                  {stops.map((stop, index) => (
+                    <Marker key={index} position={stop}>
+                      <Popup>
+                        <strong>
+                          {index === 0 ? 'Start Point' : index === stops.length - 1 ? 'End Point' : `Stop ${index}`}
+                        </strong><br />
+                        Lat: {stop[0].toFixed(6)}<br />
+                        Lng: {stop[1].toFixed(6)}<br />
+                        Arrival: {new Date(opportunity.arrivalTime).toLocaleString()}
+                      </Popup>
+                    </Marker>
+                  ))}
+
+                  {stops.length > 1 && (
+                    <Polyline 
+                      positions={stops} 
+                      color="#2196F3" 
+                      weight={4}
+                      opacity={0.7}
+                    />
+                  )}
+                </>
+              )}
+            </Map>
+          </div>
+        </div>
+
       </div>
     </div>
   );
